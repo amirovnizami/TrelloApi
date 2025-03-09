@@ -1,0 +1,52 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35527.113 d17.12
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trello.Application", "Trello.Application\Trello.Application.csproj", "{B775BC67-22EB-40B6-B53E-0A192DC55D04}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trello.Domain", "Trello.Domain\Trello.Domain.csproj", "{2B11E3B7-D9A1-4ACC-9C28-E94F0C5E95B5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trello.DAL.SqlServer", "Trello.DAL.SqlServer\Trello.DAL.SqlServer.csproj", "{1648BFEB-ECB5-437D-A292-731A32F63CB0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trello.Repository", "Trello.Repository\Trello.Repository.csproj", "{EE0E891A-CC8B-40E2-ABE7-ABD78464D054}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trello.Common", "Trello.Common\Trello.Common.csproj", "{B888ACF1-1C2E-44B3-BFF9-D3374F0A5D87}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trello.WebUi", "Trello.WebUi\Trello.WebUi.csproj", "{656DAD9B-8950-433D-BAD9-496C6E79A8D3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B775BC67-22EB-40B6-B53E-0A192DC55D04}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B775BC67-22EB-40B6-B53E-0A192DC55D04}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B775BC67-22EB-40B6-B53E-0A192DC55D04}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B775BC67-22EB-40B6-B53E-0A192DC55D04}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B11E3B7-D9A1-4ACC-9C28-E94F0C5E95B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B11E3B7-D9A1-4ACC-9C28-E94F0C5E95B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B11E3B7-D9A1-4ACC-9C28-E94F0C5E95B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B11E3B7-D9A1-4ACC-9C28-E94F0C5E95B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1648BFEB-ECB5-437D-A292-731A32F63CB0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1648BFEB-ECB5-437D-A292-731A32F63CB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1648BFEB-ECB5-437D-A292-731A32F63CB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1648BFEB-ECB5-437D-A292-731A32F63CB0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE0E891A-CC8B-40E2-ABE7-ABD78464D054}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE0E891A-CC8B-40E2-ABE7-ABD78464D054}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE0E891A-CC8B-40E2-ABE7-ABD78464D054}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE0E891A-CC8B-40E2-ABE7-ABD78464D054}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B888ACF1-1C2E-44B3-BFF9-D3374F0A5D87}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B888ACF1-1C2E-44B3-BFF9-D3374F0A5D87}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B888ACF1-1C2E-44B3-BFF9-D3374F0A5D87}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B888ACF1-1C2E-44B3-BFF9-D3374F0A5D87}.Release|Any CPU.Build.0 = Release|Any CPU
+		{656DAD9B-8950-433D-BAD9-496C6E79A8D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{656DAD9B-8950-433D-BAD9-496C6E79A8D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{656DAD9B-8950-433D-BAD9-496C6E79A8D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{656DAD9B-8950-433D-BAD9-496C6E79A8D3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
