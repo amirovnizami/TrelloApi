@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Trello.Application.Abstract;
 using Trello.DAL.SqlServer.Abstract;
 using Trello.DAL.SqlServer.Context;
@@ -6,21 +7,24 @@ using Trello.Repository.Common.Exception;
 
 namespace Trello.Application.Concrete;
 
-public class UserService(IUserDal userDal,TrelloDbContext context):IUserService
+public class UserService(IUserDal userDal, TrelloDbContext context) : IUserService
 {
     private readonly IUserDal _userDal = userDal;
+
     public async Task RegsiterAsync(User user)
     {
-        _userDal.Add(user);
+        userDal.Add(user);
     }
 
     public async void Update(User user)
     {
         _userDal.Update(user);
     }
-    public void Remove(User user)
+
+    public async Task Remove(int id)
     {
-        _userDal.Delete(user);
+        var currentUser = await _userDal.GetByIdAsync(id);
+        _userDal.Delete(currentUser);
     }
 
     public List<User> GetAll()
@@ -31,6 +35,6 @@ public class UserService(IUserDal userDal,TrelloDbContext context):IUserService
 
     public async Task<User> GetByIdAsync(int id)
     {
-        return (context.Users.FirstOrDefault(u => u.Id == id));
+        return await (context.Users.FirstOrDefaultAsync(u => u.Id == id)!);
     }
 }

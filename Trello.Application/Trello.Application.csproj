@@ -10,4 +10,9 @@
       <ProjectReference Include="..\Trello.DAL.SqlServer\Trello.DAL.SqlServer.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="AutoMapper" Version="8.0.0" />
+      <PackageReference Include="FluentValidation" Version="8.0.0" />
+    </ItemGroup>
+
 </Project>

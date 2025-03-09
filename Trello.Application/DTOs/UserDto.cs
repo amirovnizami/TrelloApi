@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace Trello.WebUi.DTOs;
+namespace Trello.Application.DTOs;
 
 public class UserDto
 {
