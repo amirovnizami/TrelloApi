@@ -1,10 +1,11 @@
-﻿using Trello.DAL.SqlServer.Models;
+﻿using System.ComponentModel.DataAnnotations;
+using Trello.DAL.SqlServer.Models;
 using Trello.Domain.Abstractions;
-using Task = Trello.DAL.SqlServer.Models.Task;
+using Task = Trello.Domain.Entities.Task;
 
 namespace Trello.Domain.Entities;
 
-public partial class User:IEntity
+public  class User:IEntity
 {
     public int Id { get; set; }
 
@@ -14,6 +15,7 @@ public partial class User:IEntity
 
     public string PasswordHash { get; set; } = null!;
 
-    public int RoleId { get; set; }
-    public virtual Role Role { get; set; } = null!;
+    public int RoleId { get; set; } 
+
+    public Role Role { get; set; }
 }

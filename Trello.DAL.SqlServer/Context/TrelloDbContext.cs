@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Trello.DAL.SqlServer.Models;
 using Trello.Domain.Entities;
-using Task = Trello.DAL.SqlServer.Models.Task;
+using Task = Trello.Domain.Entities.Task;
 
 namespace Trello.DAL.SqlServer.Context;
 
@@ -25,9 +25,12 @@ public partial class TrelloDbContext : DbContext
     public virtual DbSet<User> Users { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Data Source=DESKTOP-LIPA7K5;Initial Catalog=TrelloDb;Integrated Security=True;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;Application Intent=ReadWrite;Multi Subnet Failover=False");
-
+    {
+        if (!optionsBuilder.IsConfigured)
+        {
+            optionsBuilder.UseSqlServer("Data Source=DESKTOP-LIPA7K5;Initial Catalog=TrelloDb;Integrated Security=True;TrustServerCertificate=True");
+        }
+    }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Log>(entity =>
@@ -67,9 +70,7 @@ public partial class TrelloDbContext : DbContext
             entity.Property(e => e.PasswordHash).HasMaxLength(255);
             entity.Property(e => e.Username).HasMaxLength(100);
 
-            entity.HasOne(d => d.Role).WithMany(p => p.Users)
-                .HasForeignKey(d => d.RoleId)
-                .HasConstraintName("FK__Users__RoleId__3A81B327");
+           
         });
 
         OnModelCreatingPartial(modelBuilder);

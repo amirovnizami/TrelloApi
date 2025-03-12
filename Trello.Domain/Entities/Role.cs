@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Trello.Domain.Entities;
-
-namespace Trello.DAL.SqlServer.Models;
+﻿namespace Trello.Domain.Entities;
 
 public partial class Role
 {

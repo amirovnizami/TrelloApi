@@ -15,21 +15,20 @@ public class EfEntityRepositoryBase
             using var context = new TContext();
             return context.Set<TEntity>().SingleOrDefault(filter);
         }
-
-        public List<TEntity> GetList(Expression<Func<TEntity, bool>> filter = null)
+        public async Task<List<TEntity>> GetListAsync(Expression<Func<TEntity, bool>> filter = null)
         {
             using var context = new TContext();
             return filter == null
-                ? context.Set<TEntity>().ToList()
-                : context.Set<TEntity>().Where(filter).ToList();
+                ? await context.Set<TEntity>().ToListAsync()
+                : await context.Set<TEntity>().Where(filter).ToListAsync();
         }
 
         public void Add(TEntity entity)
         {
             using var context = new TContext();
-            var addedEntity = context.Entry(entity);
-            addedEntity.State = EntityState.Added;
-            // context.Add(addedEntity);
+            // var addedEntity = context.Entry(entity);
+            // addedEntity.State = EntityState.Added;
+            context.Add(entity);
             context.SaveChanges();
         }
 

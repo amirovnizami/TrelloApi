@@ -1,3 +1,16 @@
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Trello.Application;
+using Trello.Application.Abstract;
+using Trello.Application.AutoMapper;
+using Trello.Application.Concrete;
+using Trello.Application.Security;
+using Trello.DAL.SqlServer;
+using Trello.DAL.SqlServer.Context;
+using Trello.WebUi.Infrastructure;
+using Trello.WebUi.Security;
 
 namespace Trello.WebUi
 {
@@ -6,17 +19,38 @@ namespace Trello.WebUi
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
-            // Add services to the container.
+            MappingProfile.ConfigureMapper(builder.Services);
 
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerService();
+            builder.Services.AddHttpContextAccessor();
+            builder.Services.AddScoped<IUserContext, HttpUserContext>();
+
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+            builder.Services.AddSqlServerServices(connectionString);
+            builder.Services.AddApplicationServices();
+
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
+                        ValidAudience = builder.Configuration["JwtSettings:Audience"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["AppSettings:Secret"]!))
+                    };
+                });
+
+            builder.Services.AddAuthorization();
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
@@ -24,9 +58,8 @@ namespace Trello.WebUi
             }
 
             app.UseHttpsRedirection();
-
-            app.UseAuthorization();
-
+            app.UseAuthentication(); 
+            app.UseAuthorization();  
 
             app.MapControllers();
 

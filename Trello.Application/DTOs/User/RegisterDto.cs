@@ -2,20 +2,19 @@ using FluentValidation;
 
 namespace Trello.Application.DTOs;
 
-public class UserDto
+public class RegisterDto
 {
     public string Username { get; set; } = null!;
-
     public string Email { get; set; } = null!;
-    public string Password { get; set; }
+    public string Password { get; set; } = null!;
 
     public int RoleId { get; set; }
 
 }
 
-public class UserDtoValidator : AbstractValidator<UserDto>
+public class RegisterDtoValidator : AbstractValidator<RegisterDto>
 {
-    public UserDtoValidator()
+    public RegisterDtoValidator()
     {
         RuleFor(x => x.Username)
             .NotEmpty().WithMessage("Full Name cannot be empty.")
@@ -29,5 +28,4 @@ public class UserDtoValidator : AbstractValidator<UserDto>
             .MinimumLength(6).WithMessage("Password must be at least 6 characters.");
         RuleFor(x=>x.RoleId).GreaterThan(0).WithMessage("Invalid role ID.");
     }
-
 }
