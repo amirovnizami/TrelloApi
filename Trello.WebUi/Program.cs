@@ -1,17 +1,14 @@
 using System.Text;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Trello.Application;
-using Trello.Application.Abstract;
 using Trello.Application.AutoMapper;
-using Trello.Application.Concrete;
+using Trello.Application.DTOs;
 using Trello.Application.Security;
 using Trello.DAL.SqlServer;
-using Trello.DAL.SqlServer.Context;
 using Trello.WebUi.Infrastructure;
 using Trello.WebUi.Security;
-
 namespace Trello.WebUi
 {
     public class Program
@@ -21,13 +18,17 @@ namespace Trello.WebUi
             var builder = WebApplication.CreateBuilder(args);
             MappingProfile.ConfigureMapper(builder.Services);
 
+            builder.Services.AddControllers()
+                .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<RegisterDtoValidator>());
+
+            
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             builder.Services.AddSwaggerService();
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddScoped<IUserContext, HttpUserContext>();
-
+            
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
             builder.Services.AddSqlServerServices(connectionString);
             builder.Services.AddApplicationServices();

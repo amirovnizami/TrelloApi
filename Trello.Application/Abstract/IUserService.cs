@@ -7,10 +7,10 @@ namespace Trello.Application.Abstract;
 
 public interface IUserService
 {
-    Task RegisterAsync(User user);
+    Task<Result<User>> RegisterAsync(User user);
     Task<IActionResult> LoginAsync(LoginDto loginDto);
-    void Update(User user);
-    Task Remove(int id);
+    Task<Result<User>> Update(int ?id,User user);
+    Task<Result<User>> Remove(int id);
     Task<List<User>> GetAll();
     Task<User> GetByIdAsync(int id);
 }

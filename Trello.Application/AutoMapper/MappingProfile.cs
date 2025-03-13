@@ -30,6 +30,9 @@ public class MappingProfile
                 .ForMember(dest => dest.RoleId, opt => opt.MapFrom(src => src.RoleId));
 
             cfg.CreateMap<User, UserDto>().ReverseMap();
+            cfg.CreateMap<Task, TaskDto>().ReverseMap();
+            cfg.CreateMap<TaskStatisticsDto, TaskDto>().ReverseMap();
+
         });
     }
 }

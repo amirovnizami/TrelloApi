@@ -9,19 +9,20 @@ using Trello.Domain.Enums;
 
 namespace Trello.Application.Concrete;
 
-public class TaskService(ITaskDal taskDal,TrelloDbContext context):ITaskService
+public class TaskService(ITaskDal taskDal, TrelloDbContext context) : ITaskService
 {
     private readonly TrelloDbContext _context = context;
     private readonly ITaskDal _taskDal = taskDal;
-    public async Task CreateAsync(Domain.Entities.Task task,int currentUserId)
+
+    public async Task CreateAsync(Domain.Entities.Task task, int currentUserId)
     {
         task.CreatorId = currentUserId;
         task.Status = Status.New;
         _taskDal.Add(task);
     }
 
-    
-    public async  Task UpdateAsync(Domain.Entities.Task task)
+
+    public async Task UpdateAsync(Domain.Entities.Task task)
     {
         _taskDal.Update(task);
     }
@@ -32,12 +33,12 @@ public class TaskService(ITaskDal taskDal,TrelloDbContext context):ITaskService
         _taskDal.Delete(task);
     }
 
-   
 
-    public async Task<List<Domain.Entities.Task>> GetAllAsync( Expression<Func<Domain.Entities.Task, bool>> filter = null)
+    public async Task<List<Domain.Entities.Task>> GetAllAsync(
+        Expression<Func<Domain.Entities.Task, bool>> filter = null)
     {
-       var tasks =  _taskDal.GetListAsync(filter);
-       return await await Task.FromResult(tasks);
+        var tasks = _taskDal.GetListAsync(filter);
+        return await await Task.FromResult(tasks);
     }
 
     public async Task<Domain.Entities.Task?> GetByIdAsync(int id)
@@ -67,4 +68,19 @@ public class TaskService(ITaskDal taskDal,TrelloDbContext context):ITaskService
 
         return statistics;
     }
+
+    public async Task<List<Domain.Entities.Task>> SortByDate()
+    {
+        return _context.Tasks.ToList().OrderBy(t => t.StartDate).ToList();
+    }
+
+
+    public async Task<List<Domain.Entities.Task>> SortByPriority(int priorityId)
+    {
+        return await _context.Tasks
+            .Where(t => t.Priority == (Priority)priorityId)
+            .OrderBy(t => t.Priority)
+            .ToListAsync();
+    }
+    
 }

@@ -12,13 +12,24 @@ using Task = System.Threading.Tasks.Task;
 
 namespace Trello.Application.Concrete;
 
-public class UserService(IUserDal userDal, IConfiguration configuration, TrelloDbContext context,ITokenService tokenService) : IUserService
+public class UserService(
+    IUserDal userDal,
+    IConfiguration configuration,
+    TrelloDbContext context,
+    ITokenService tokenService) : IUserService
 {
     private readonly IUserDal _userDal = userDal;
 
-    public async Task RegisterAsync(User user)
+    public async Task<Result<User>> RegisterAsync(User user)
     {
-        userDal.Add(user);
+        if (user.RoleId > 0 && user.RoleId <= 3)
+        {
+            userDal.Add(user);
+            var response = new Result<User>() { Data = user, Errors = [], IsSuccess = true };
+            return response;
+        }
+
+        return new Result<User>() { Data = null, Errors = ["Occured an error"], IsSuccess = false };
     }
 
     public async Task<IActionResult> LoginAsync(LoginDto loginDto)
@@ -40,15 +51,27 @@ public class UserService(IUserDal userDal, IConfiguration configuration, TrelloD
         return new OkObjectResult(token);
     }
 
-    public async void Update(User user)
+    public async Task<Result<User>> Update(int ?id,User user)
     {
+        var exisitingUser  = await _userDal.GetByIdAsync(id);
+        if (exisitingUser == null)
+        {
+            return new Result<User>() { Data = null, Errors = ["User not found"], IsSuccess = false };
+        }
         _userDal.Update(user);
+        return new Result<User>() { Data = null, Errors = [], IsSuccess = true };
     }
 
-    public async Task Remove(int id)
+    public async Task<Result<User>> Remove(int id)
     {
         var currentUser = await _userDal.GetByIdAsync(id);
+        if (currentUser == null)
+        {
+            return new Result<User>() { Data = null, Errors = ["User does not exists!"], IsSuccess = false };
+        }
+
         _userDal.Delete(currentUser);
+        return new Result<User>() { Data = currentUser, IsSuccess = true };
     }
 
     public Task<List<User>> GetAll()

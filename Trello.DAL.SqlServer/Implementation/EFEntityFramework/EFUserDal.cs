@@ -15,7 +15,7 @@ public class EFUserDal: EfEntityRepositoryBase.EFEntityRepositoryBase<User,Trell
         _context = context;
     }
 
-    public async Task<User> GetByIdAsync(int id)
+    public async Task<User> GetByIdAsync(int? id)
     {
         var result = await _context.Users.AsNoTracking()
             .FirstOrDefaultAsync(u => u.Id == id);

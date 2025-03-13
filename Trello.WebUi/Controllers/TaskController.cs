@@ -67,7 +67,7 @@ public class TaskController(IMapper mapper, ITaskService taskService,IUserContex
         return Ok(tasks);
     }
     [HttpGet]
-    public async Task<ActionResult> GetTasksAssigne([FromQuery] int assigneeId)
+    public async Task<ActionResult> GetTasksByAssigne([FromQuery] int assigneeId)
     {
         Expression<Func<Task, bool>> filter = task =>  task.AssigneeId == assigneeId;
         var tasks = await _taskService.GetAllAsync(filter);
@@ -75,9 +75,23 @@ public class TaskController(IMapper mapper, ITaskService taskService,IUserContex
     }
 
     [HttpGet]
-    public async Task<ActionResult<TaskStatisticsDto>> GetTaskStatistics()
+    public async Task<ActionResult> SortTaskByDate()
     {
-        var statistics = await _taskService.GetTaskStatisticsAsync();
-        return Ok(statistics);
+        var resutlt = await _taskService.SortByDate();
+        return Ok(resutlt);
     }
+    [HttpGet]
+    public async Task<ActionResult> SortTaskByPriority()
+    {
+        var result = await _taskService.SortByDate();
+        return Ok(result);
+    }
+
+    [HttpGet]
+    public async Task<ActionResult> SortByPriority(int PriorityId)
+    {
+        var result = await _taskService.SortByPriority(PriorityId);
+        return Ok(result);
+    }
+    
 }
