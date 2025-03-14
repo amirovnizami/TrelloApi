@@ -22,10 +22,9 @@ public class UserController(
     IUserContext userContext) : ControllerBase
 {
     [HttpPost]
-    [Authorize(Roles = "1,2")]
+    [Authorize(Roles = "Admin,Manager")]
     public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
     {
-
         var hashedPassword = BCrypt.Net.BCrypt.HashPassword(registerDto.Password);
         registerDto.Password = hashedPassword;
 
@@ -50,7 +49,7 @@ public class UserController(
     }
 
     [HttpDelete]
-    [Authorize(Roles = "1,2")]
+    [Authorize(Roles = "Admin,Manager")]
     public async Task<IActionResult> Delete([FromQuery] int id)
     {
         var result = await userService.Remove(id);
@@ -63,7 +62,7 @@ public class UserController(
     }
 
     [HttpPut]
-    [Authorize(Roles = "1,2")]
+    [Authorize(Roles = "Admin,Manager")]
     public async Task<IActionResult> Update([FromQuery] int id, UserDto userDto)
     {
         var user = await userService.GetByIdAsync(id);
@@ -106,7 +105,7 @@ public class UserController(
     }
 
     [HttpGet]
-    [Authorize]
+    [Authorize("Admin")]
     public async Task<IActionResult> GetAll()
     {
         var users = await userService.GetAll();
@@ -114,73 +113,15 @@ public class UserController(
         return Ok(result);
     }
 
-    [HttpGet]
-    [Authorize(Roles = "2")]
-    public async Task<IActionResult> AssingTask([FromQuery] int TaskId, [FromQuery] int AssignedToId)
-    {
-        var user = await userService.GetByIdAsync(AssignedToId);
-        if (user == null)
-        {
-            return NotFound("User not found");
-        }
-
-        var task = await taskService.GetByIdAsync(TaskId);
-        if (task == null)
-        {
-            return NotFound("Task not found");
-        }
-
-        task.AssigneeId = user.Id;
-
-        await taskService.UpdateAsync(task);
-        return Ok("Task successfully assigned.");
-    }
-
-    [HttpPost]
-    [Authorize(Roles = "3")]
-    public async Task<ActionResult> GetMyTasks()
-    {
-        var userId = userContext.MustGetUserId();
-        var tasks = await taskService.GetAllAsync(t => t.AssigneeId == userId);
-        var result = mapper.Map<IList<TaskDto>>(tasks);
-
-        return Ok(result);
-    }
-
     [HttpPut]
-    [Authorize(Roles = "3")]
-
-    public async Task<ActionResult> UpdateTaskStatus([FromQuery] int TaskId, [FromQuery] int StatusId)
-    {
-        // var userId = userContext.MustGetUserId();
-        var task = await taskService.GetByIdAsync(TaskId);
-        if (task != null)
-        {
-            task.Status = (Status)(StatusId);
-            await taskService.UpdateAsync(task);
-            return Ok("Status successfully updated.");
-        }
-        return NotFound("Task not found");
-    }
-
-    [HttpGet]
-    [Authorize(Roles = "2")]
-    public async Task<ActionResult<TaskStatisticsDto>> GetTaskStatistics()
-    {
-        var statistics = await taskService.GetTaskStatisticsAsync();
-        var dto = mapper.Map<TaskStatisticsDto>(statistics);
-        return Ok(statistics);
-    }
-
-    [HttpPut]
-    [Authorize(Roles = "3")]
+    [Authorize(Roles = "Assignee")]
     public async Task<ActionResult<TaskStatisticsDto>> ChangePassword([FromQuery] int UserId,
         [FromQuery] string newPassword)
     {
         var user = await userService.GetByIdAsync(UserId);
         var hashedPassword = BCrypt.Net.BCrypt.HashPassword(newPassword);
         user.PasswordHash = hashedPassword;
-        userService.Update(null,user);
+        await userService.Update(null, user);
         return Ok("Password changed successfully");
     }
 }

@@ -12,8 +12,7 @@ public interface ITaskService
     Task<List<Domain.Entities.Task>> GetAllAsync(Expression<Func<Domain.Entities.Task, bool>> predicate);
     public Task<Domain.Entities.Task?> GetByIdAsync(int id);
     Task<TaskStatisticsDto> GetTaskStatisticsAsync();
-    Task<List<Domain.Entities.Task>> SortByDate();
+    List<Domain.Entities.Task> SortTask<T>(T parametr);
     Task<List<Domain.Entities.Task>> SortByPriority(int priorityId);
-
     
 }

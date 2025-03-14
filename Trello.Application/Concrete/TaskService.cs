@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Trello.Application.Abstract;
 using Trello.Application.DTOs;
@@ -67,6 +68,21 @@ public class TaskService(ITaskDal taskDal, TrelloDbContext context) : ITaskServi
             .ToListAsync();
 
         return statistics;
+    }
+
+    [HttpGet]
+    public List<Domain.Entities.Task> SortTask<T>(T parametr)
+    {
+        if (typeof(T) == typeof(DateTime))
+        {
+            return  _context.Tasks.ToList().OrderBy(t => t.StartDate).ToList();
+        }
+
+        if (typeof(T) == typeof(Priority))
+        {
+            return _context.Tasks.ToList().OrderBy(t => t.Priority).ToList();
+        }
+        return _context.Tasks.Include(t => t.Assignee).ToList();
     }
 
     public async Task<List<Domain.Entities.Task>> SortByDate()

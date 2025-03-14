@@ -24,21 +24,29 @@ public class TaskDto
 
 public class TaskDtoValidator : AbstractValidator<TaskDto>
 {
-    // public TaskDtoValidator()
+    public TaskDtoValidator()
+    {
+        RuleFor(x => x.Title)
+            .NotEmpty().WithMessage("Title is required.")
+            .MaximumLength(100).WithMessage("Title must be at most 100 characters long.");
+    
+        RuleFor(x => x.Description)
+            .MaximumLength(500).WithMessage("Description must be at most 500 characters long.");
+    
+        RuleFor(x => x.Priority)
+            .IsInEnum().WithMessage("Invalid priority value.");
+    
+        // RuleFor(x => x.AssigneeId)
+        //     
+        //     .GreaterThan(0).WithMessage("Invalid Assignee ID.")
+        //     .Must(AssigneeExists).WithMessage("Assignee ID does not exist in Users table.");
+    }
+
+   
+
+    // private bool AssigneeExists(int? assigneeId)
     // {
-    //     RuleFor(x => x.Title)
-    //         .NotEmpty().WithMessage("Title is required.")
-    //         .MaximumLength(100).WithMessage("Title must be at most 100 characters long.");
-    //
-    //     RuleFor(x => x.Description)
-    //         .MaximumLength(500).WithMessage("Description must be at most 500 characters long.");
-    //
-    //     RuleFor(x => x.Priority)
-    //         .IsInEnum().WithMessage("Invalid priority value.");
-    //
-    //     RuleFor(x => x.AssigneeId)
-    //         
-    //         .GreaterThan(0).WithMessage("Invalid Assignee ID.")
-    //         .Must(AssigneeExists).WithMessage("Assignee ID does not exist in Users table.");
+    //     if (!assigneeId.HasValue) return true; 
+    //     return _context.Users.Any(u => u.Id == assigneeId.Value); 
     // }
 }

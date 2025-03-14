@@ -12,14 +12,15 @@ using Task = Trello.Domain.Entities.Task;
 namespace Trello.WebUi.Controllers;
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class TaskController(IMapper mapper, ITaskService taskService,IUserContext userContext) : ControllerBase
+public class TaskController(IMapper mapper, ITaskService taskService,IUserContext userContext,IUserService userService) : ControllerBase
 {
     private readonly ITaskService _taskService = taskService;
     private readonly IMapper _mapper = mapper;
     private readonly IUserContext _userContext = userContext;
+    private readonly IUserService _userService = userService;
 
     [HttpPost]
-    [Authorize]
+    [Authorize(Roles = "Manager")]
     public async Task<IActionResult> CreateTask([FromBody] TaskCreateDto taskCreateDto)
     {
         var currentUser = _userContext.MustGetUserId();
@@ -29,6 +30,7 @@ public class TaskController(IMapper mapper, ITaskService taskService,IUserContex
     }
 
     [HttpPut]
+    [Authorize(Roles = "Manager")]
     public async Task<IActionResult> UpdateTask( [FromQuery] int id,[FromBody] TaskUpdateDto taskUpdateDto)
     {
         var exisitingTask = await _taskService.GetByIdAsync(id);
@@ -42,6 +44,7 @@ public class TaskController(IMapper mapper, ITaskService taskService,IUserContex
     }
 
     [HttpDelete]
+    [Authorize(Roles = "Manager")]
     public async Task<IActionResult> DeleteTask(int id)
     {
          var task = await _taskService.GetByIdAsync(id);
@@ -53,13 +56,71 @@ public class TaskController(IMapper mapper, ITaskService taskService,IUserContex
          return Ok();
     }
     [HttpGet]
+    [Authorize(Roles = "Manager")]
+    public async Task<IActionResult> AssingTask([FromQuery] int TaskId, [FromQuery] int AssignedToId)
+    {
+        var user = await userService.GetByIdAsync(AssignedToId);
+        if (user == null)
+        {
+            return NotFound("User not found");
+        }
+
+        var task = await taskService.GetByIdAsync(TaskId);
+        if (task == null)
+        {
+            return NotFound("Task not found");
+        }
+
+        task.AssigneeId = user.Id;
+
+        await taskService.UpdateAsync(task);
+        return Ok("Task successfully assigned.");
+    }
+
+    [HttpPost]
+    [Authorize(Roles = "Assignee")]
+    public async Task<ActionResult> GetMyTasks()
+    {
+        var userId = userContext.MustGetUserId();
+        var tasks = await taskService.GetAllAsync(t => t.AssigneeId == userId);
+        var result = mapper.Map<IList<TaskDto>>(tasks);
+
+        return Ok(result);
+    }
+    [HttpGet]
+    [Authorize(Roles = "Assignee")]
     public async Task<ActionResult> GetTasksByPriority([FromQuery] int priorityId)
     {
         Expression<Func<Task, bool>> filter = task =>  task.Priority == (Priority)priorityId;
         var tasks =await _taskService.GetAllAsync(filter);
         return Ok(tasks);
     }
+    [HttpPut]
+    [Authorize(Roles = "Assignee")]
+    public async Task<ActionResult> UpdateTaskStatus([FromQuery] int TaskId, [FromQuery] int StatusId)
+    {
+        // var userId = userContext.MustGetUserId();
+        var task = await taskService.GetByIdAsync(TaskId);
+        if (task != null)
+        {
+            task.Status = (Status)(StatusId);
+            await taskService.UpdateAsync(task);
+            return Ok("Status successfully updated.");
+        }
+
+        return NotFound("Task not found");
+    }
+
     [HttpGet]
+    [Authorize(Roles = "Manager")]
+    public async Task<ActionResult<TaskStatisticsDto>> GetTaskStatistics()
+    {
+        var statistics = await taskService.GetTaskStatisticsAsync();
+        var dto = mapper.Map<TaskStatisticsDto>(statistics);
+        return Ok(statistics);
+    }
+    [HttpGet]
+    [Authorize(Roles = "Manager")]
     public async Task<ActionResult> GetTasksByStatus([FromQuery] int statusId)
     {
         Expression<Func<Task, bool>> filter = task =>  task.Status == (Status)statusId;
@@ -67,7 +128,8 @@ public class TaskController(IMapper mapper, ITaskService taskService,IUserContex
         return Ok(tasks);
     }
     [HttpGet]
-    public async Task<ActionResult> GetTasksByAssigne([FromQuery] int assigneeId)
+    [Authorize(Roles = "Manager")]
+    public async Task<ActionResult> GetTasksByAssignee([FromQuery] int assigneeId)
     {
         Expression<Func<Task, bool>> filter = task =>  task.AssigneeId == assigneeId;
         var tasks = await _taskService.GetAllAsync(filter);
@@ -75,23 +137,23 @@ public class TaskController(IMapper mapper, ITaskService taskService,IUserContex
     }
 
     [HttpGet]
-    public async Task<ActionResult> SortTaskByDate()
+    [Authorize(Roles = "Manager")]
+    public async Task<ActionResult> SortTask([FromQuery] string param)
     {
-        var resutlt = await _taskService.SortByDate();
-        return Ok(resutlt);
-    }
-    [HttpGet]
-    public async Task<ActionResult> SortTaskByPriority()
-    {
-        var result = await _taskService.SortByDate();
-        return Ok(result);
-    }
-
-    [HttpGet]
-    public async Task<ActionResult> SortByPriority(int PriorityId)
-    {
-        var result = await _taskService.SortByPriority(PriorityId);
-        return Ok(result);
+        if (DateTime.TryParse(param, out DateTime date))
+        {
+            var result = _taskService.SortTask(date);
+            return Ok(result);
+        }
+        else if (Enum.TryParse<Priority>(param, out Priority priority))
+        {
+            var result = _taskService.SortTask(priority);
+            return Ok(result);
+        }
+        else
+        {
+            return BadRequest("Invalid parameter. Use a valid DateTime or Priority value.");
+        }
     }
     
 }
